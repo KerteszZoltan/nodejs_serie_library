@@ -1,11 +1,16 @@
 import { Router, Request, Response } from "express";
-import { connecToMongo } from "../config/databaseConnect";
+import { connect,closeConnection } from "../config/databaseConnect";
+import { Db } from "mongodb";
+import { json } from "stream/consumers";
 
 const router = Router();
 
-router.get('/', (req:Request, res:Response)=>{
-    connecToMongo();
-    res.send('Series list');
+router.get('/', async (req:Request, res:Response)=>{
+    const db = await connect();
+    const collection = db.collection('series');
+    const series = await collection.find().toArray();
+    closeConnection();
+    res.send(series);
 });
 
 router.get('/watched', (req:Request, res:Response)=>{
