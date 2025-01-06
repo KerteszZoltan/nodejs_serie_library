@@ -1,8 +1,8 @@
 import mongoose, { model } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
     authentication: {
         password: { type: String, required: true },
         salt: { type: String, select: false },
@@ -16,7 +16,7 @@ export const getUser = () => UserModel.find();
 export const getUserById = (id: string) => UserModel.findById(id);
 export const getUserByEmail = (email: string) => UserModel.findOne({ email });
 export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne({
-    'authentications.sessionToken': sessionToken,
+    'authentication.sessionToken': sessionToken,
 });
 export const createUser = (user: Record<string, any>) => 
     new UserModel(user).save().then((user)=> user.toObject());
