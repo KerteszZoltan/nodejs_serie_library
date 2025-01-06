@@ -4,7 +4,7 @@ import { Db,MongoClient, ServerApiVersion } from "mongodb";
 dotenv.config();
 
 const mongoose = require('mongoose');
-const uri = "mongodb+srv://"+process.env.DB_USER+":"+process.env.DB_PASS+"@tesztapp.x43cp.mongodb.net/MovieDiary?retryWrites=true&w=majority&appName=tesztApp";
+const uri = "mongodb+srv://"+process.env.DB_USER+":"+process.env.DB_PASS+"@tesztapp.x43cp.mongodb.net/"+process.env.DB_NAME+"?retryWrites=true&w=majority&appName=tesztApp";
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
 export async function Connect() {
