@@ -18,6 +18,24 @@ export const getAllUsers = async (req: Request,res:Response) => {
     }
 }
 
+export const getOneUser = async (req:Request, res:Response) => {
+    await Connect();
+    try {
+        const {id} = req.params;
+        const user = await getUserById(id);
+        if (!user) {
+            CloseConnect();
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+        CloseConnect();
+        res.json(user).status(200);
+    } catch (error) {
+        CloseConnect();
+        console.log(error);
+        res.sendStatus(400).json(error);
+    }
+}
 
 export const deleteUser = async (req:Request, res:Response)=>{
     await Connect();

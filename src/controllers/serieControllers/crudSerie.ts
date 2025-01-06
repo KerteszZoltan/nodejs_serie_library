@@ -20,6 +20,27 @@ export const getAllSeries = async (req:Request, res:Response ) => {
 
 }
 
+export const getOneSerie = async (req:Request, res:Response) => {
+    await Connect();
+    try {
+        const {id} = req.params;
+        const serie = await getSerieById(id);
+        if (!serie) {
+            CloseConnect();
+            message = {
+                "message" : "This serie is not in the database"
+            }
+            res.status(400).send(message);
+            return;
+        }
+        CloseConnect();
+        res.json(serie).status(200);
+        return;
+    } catch (error) {
+        CloseConnect();
+        console.log(error);
+    }
+}
 
 export const addSerie = async (req:Request, res:Response) => {
     await Connect();
