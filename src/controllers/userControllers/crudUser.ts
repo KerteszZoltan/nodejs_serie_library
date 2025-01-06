@@ -1,8 +1,22 @@
 import { Request, Response } from "express";
-import { deleteUserById, getUserById, UserModel } from "../../models/User";
+import { getUser, deleteUserById, getUserById, UserModel } from "../../models/User";
 import { Connect, CloseConnect } from "../../configs/databaseConnect";
 import { updateUserById } from "../../models/User";
 import {authentication, random} from '../../helpers/index';
+
+
+export const getAllUsers = async (req: Request,res:Response) => {
+    await Connect();
+    try {
+        const users = await getUser();
+        CloseConnect();
+        res.json(users).status(200);
+    } catch (error) {
+        CloseConnect();
+        console.log(error);
+        res.sendStatus(400).json(error);
+    }
+}
 
 
 export const deleteUser = async (req:Request, res:Response)=>{
@@ -30,7 +44,7 @@ export const updateUser = async (req:Request, res:Response)=>{
             res.sendStatus(404).json({ error: "User not found" });
             return;
         }
-        const updatedUser = {
+        const updatingUser = {
             username: req.body.username ? req.body.username : user.username,
             email: req.body.email ? req.body.email : user.email,
             authentication: {
@@ -39,8 +53,8 @@ export const updateUser = async (req:Request, res:Response)=>{
             }
         }
 
-        await updateUserById(id, updatedUser);
-        res.json(updatedUser).status(200);
+        await updateUserById(id, updatingUser);
+        res.json(updatingUser).status(200);
         return;
 
     }catch(error){
