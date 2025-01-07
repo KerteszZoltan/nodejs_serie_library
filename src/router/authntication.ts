@@ -5,5 +5,5 @@ import { validatePassword } from '../helpers/passwordValidator';
 
 export default (router : express.Router) => {
     router.post('/register', validateEmail(), validatePassword(), register);
-    router.post('/login', login);
+    router.post('/login', validateEmail(), validatePassword() ,login);
 };

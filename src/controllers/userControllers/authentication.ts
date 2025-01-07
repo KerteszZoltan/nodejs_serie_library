@@ -21,6 +21,11 @@ export const login = async (req: Request, res: Response)=>{
             res.status(400).json(message);
             return;
         }
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return; 
+        }
 
         const user = await getUserByEmail(email).select('+authentication.password +authentication.salt');
 
@@ -57,7 +62,19 @@ export const login = async (req: Request, res: Response)=>{
         await user.save();
 
         CloseConnect();
-        res.cookie('SESSION-TOKEN', user.authentication.sessionToken, {domain: 'localhost', path: '/'}).status(200).json(user);
+
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 1); 
+        message={
+            "user" : user,
+            "cookie expires at:" : expiresAt
+        }
+
+        res.cookie('SESSION-TOKEN', user.authentication.sessionToken, {
+            domain: 'localhost', 
+            path: '/',
+            expires: expiresAt
+        }).status(200).json(message);
         return;
         
     } catch (error) {
