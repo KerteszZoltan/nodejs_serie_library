@@ -91,7 +91,6 @@ export const register = async (req: Request, res: Response) => {
     await Connect();
     try {
         const { username, email, password } = req.body;
-        let pwpolicy = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
         if (!username || !email || !password) {
             CloseConnect();
             message = {
