@@ -79,6 +79,7 @@ export const addSerie = async (req:Request, res:Response) => {
             },
         }
         res.status(200).json(message).end();
+        return;
     } catch (error) {
         res.send(error);
         console.log(error);

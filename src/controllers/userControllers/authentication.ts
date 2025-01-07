@@ -136,6 +136,7 @@ export const register = async (req: Request, res: Response) => {
             }
         };
         res.status(200).json(message).end();
+        return;
     }catch (error) {
         res.status(400).json(error);
         return;

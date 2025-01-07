@@ -27,6 +27,7 @@ export const isOwner = async (req:Request, res:Response, next: NextFunction)=>{
         next();
     } catch (error) {
         console.log(error);
+        return;
     }
 
 }
@@ -42,6 +43,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         if (!sessionToken) {
             CloseConnect();
             res.status(401).json(message);
+            return;
         }
         const existingUser = await getUserBySessionToken(sessionToken);
         if (!existingUser) {
