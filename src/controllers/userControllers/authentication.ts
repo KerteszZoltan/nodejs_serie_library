@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { getUserByEmail , createUser} from '../../models/User';
 import {authentication, random} from '../../helpers/index';
 import { Connect,CloseConnect} from "../../configs/databaseConnect";
+import { validationResult } from 'express-validator';
 
 
 let message;
@@ -91,14 +92,13 @@ export const register = async (req: Request, res: Response) => {
             res.status(400).json(message);
             return;
         }
-        if (!password.match(pwpolicy)) {
-            CloseConnect();
-            message = {
-                "message" : "Password is invalid!"
-            }
-            res.status(400).json(message);
+        
+        const errors = await validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
             return;
         }
+
         const salt = random();
         const user = await createUser({
             email,
