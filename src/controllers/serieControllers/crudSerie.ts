@@ -16,6 +16,7 @@ export const getAllSeries = async (req:Request, res:Response ) => {
         CloseConnect();
         console.log(error);
         res.sendStatus(400).json(error);
+        return;
     }
 
 }
@@ -39,6 +40,7 @@ export const getOneSerie = async (req:Request, res:Response) => {
     } catch (error) {
         CloseConnect();
         console.log(error);
+        return;
     }
 }
 
@@ -80,6 +82,7 @@ export const addSerie = async (req:Request, res:Response) => {
     } catch (error) {
         res.send(error);
         console.log(error);
+        return;
     }
 }
 
@@ -118,6 +121,7 @@ export const updateSerie = async (req:Request, res:Response) => {
         return;
     }catch(error){
         console.log(error);
+        return;
     }
 }
 
@@ -145,5 +149,6 @@ export const deleteSerie = async (req:Request, res:Response) =>{
         return;
     } catch (error) {
         console.log(error);
+        return;
     }
 }

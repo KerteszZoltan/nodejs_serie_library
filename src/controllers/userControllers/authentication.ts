@@ -11,6 +11,7 @@ export const login = async (req: Request, res: Response)=>{
         if (!email || !password) {
             CloseConnect();
             res.status(400).send("email and password are required");
+            return;
         }
 
         const user = await getUserByEmail(email).select('+authentication.password +authentication.salt');
@@ -31,6 +32,7 @@ export const login = async (req: Request, res: Response)=>{
         if (user.authentication.password !== exceptedHash) {
             CloseConnect();
             res.status(403).send("Invalid password");
+            return;
         }
 
         const salt = random();
@@ -39,11 +41,13 @@ export const login = async (req: Request, res: Response)=>{
 
         CloseConnect();
         res.cookie('SESSION-TOKEN', user.authentication.sessionToken, {domain: 'localhost', path: '/'}).status(200).json(user);
+        return;
         
     } catch (error) {
         CloseConnect();
         res.status(400).send("Login not successfull");
         console.log(error);
+        return;
     }
 
 }

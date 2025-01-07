@@ -11,10 +11,12 @@ export const getAllUsers = async (req: Request,res:Response) => {
         const users = await getUser();
         CloseConnect();
         res.json(users).status(200);
+        return;
     } catch (error) {
         CloseConnect();
         console.log(error);
         res.sendStatus(400).json(error);
+        return;
     }
 }
 
@@ -30,10 +32,12 @@ export const getOneUser = async (req:Request, res:Response) => {
         }
         CloseConnect();
         res.json(user).status(200);
+        return;
     } catch (error) {
         CloseConnect();
         console.log(error);
         res.sendStatus(400).json(error);
+        return;
     }
 }
 
@@ -44,10 +48,12 @@ export const deleteUser = async (req:Request, res:Response)=>{
         const deletedUser = await deleteUserById(id);
         CloseConnect();
         res.json(deletedUser).status(200);
+        return;
     }catch(error){
         console.log(error);
         CloseConnect();
         res.sendStatus(400).json(error);
+        return;
     }
 } 
 
