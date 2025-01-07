@@ -4,13 +4,20 @@ import { getUserByEmail , createUser} from '../../models/User';
 import {authentication, random} from '../../helpers/index';
 import { Connect,CloseConnect} from "../../configs/databaseConnect";
 
+
+let message;
+
+
 export const login = async (req: Request, res: Response)=>{
     await Connect();
     try {
         const {email, password} = req.body;
         if (!email || !password) {
             CloseConnect();
-            res.status(400).send("email and password are required");
+            message = {
+                "message" : "email and password are required"
+            }
+            res.status(400).json(message);
             return;
         }
 
@@ -18,20 +25,29 @@ export const login = async (req: Request, res: Response)=>{
 
         if(!user){
             CloseConnect();
-            res.status(400).send("Invalid e-mail address");
+            message = {
+                "message" : "Invalid e-mail address"
+            }
+            res.status(400).json(message);
             return;
         }
 
         if (!user?.authentication?.salt) {
             CloseConnect();
-            res.status(403).send("Invalid e-mail address");
+            message = {
+                "message" : "User salt found"
+            }
+            res.status(403).json(message);
             return;
         }
         const exceptedHash = authentication( password,user.authentication.salt);
 
         if (user.authentication.password !== exceptedHash) {
             CloseConnect();
-            res.status(403).send("Invalid password");
+            message = {
+                "message" : "Password is not match"
+            }
+            res.status(403).json(message);
             return;
         }
 
@@ -57,7 +73,7 @@ export const register = async (req: Request, res: Response) => {
     await Connect();
     try {
         const { username, email, password } = req.body;
-        let message;
+        let pwpolicy = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
         if (!username || !email || !password) {
             CloseConnect();
             message = {
@@ -72,6 +88,14 @@ export const register = async (req: Request, res: Response) => {
             message = {
                 "message" : "Existing user!"
             };
+            res.status(400).json(message);
+            return;
+        }
+        if (!password.match(pwpolicy)) {
+            CloseConnect();
+            message = {
+                "message" : "Password is invalid!"
+            }
             res.status(400).json(message);
             return;
         }
