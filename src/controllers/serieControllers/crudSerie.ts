@@ -2,8 +2,23 @@ import { Request, Response } from "express";
 import { CloseConnect, Connect } from "../../configs/databaseConnect";
 import { getSeries, getSerieByTitleEN, updateSerieById, deleteSerieById, getSerieById} from "../../models/Serie";
 import { createSerie } from "../../models/Serie";
+import { sanitizeInput } from "../../helpers/sanityzer";
 
 let message;
+
+const sanitizeNestedInput = (input: any): any => {
+    if (typeof input === 'object' && input !== null) {
+      const sanitizedObject: any = {};
+      for (const key in input) {
+        if (Object.prototype.hasOwnProperty.call(input, key)) {
+          const value = input[key];
+          sanitizedObject[key] = typeof value === 'string' ? sanitizeInput(value) : value;
+        }
+      }
+      return sanitizedObject;
+    }
+    return sanitizeInput(input);
+  };
 
 export const getAllSeries = async (req:Request, res:Response ) => {
     await Connect();
@@ -51,7 +66,7 @@ export const addSerie = async (req:Request, res:Response) => {
         if (!titleEN) {
             await CloseConnect();
             message = {
-                "message" : "english title is required"
+                "message" : "English title is required"
             };
             res.status(400).send(message);
             return;
@@ -64,12 +79,9 @@ export const addSerie = async (req:Request, res:Response) => {
             res.status(400).send(message);
             return;
         }
-        const newSerie = await createSerie({
-            titleEN,
-            titleHU,
-            descriptionEN,
-            descriptionHU,
-        });
+        
+        let sanitizedInput = sanitizeNestedInput(req.body);
+        const newSerie = await createSerie(sanitizedInput);
 
         CloseConnect();
         message={
@@ -109,12 +121,14 @@ export const updateSerie = async (req:Request, res:Response) => {
             res.status(400).json(message);
             return;
         }
+        let sanitizedInput = sanitizeNestedInput(req.body);
+        
         const updatingSerie = {
             id:existingSerie.id,
-            titleEN: req.body.titleEN ? req.body.titleEN : existingSerie.titleEN,
-            titleHU: req.body.titleHU ? req.body.titleHU : existingSerie.titleHU,
-            descriptionEN: req.body.descriptionEN ? req.body.descriptionEN : existingSerie.descriptionEN,
-            descriptionHU: req.body.descriptionHU ? req.body.descriptionHU : existingSerie.descriptionHU,
+            titleEN: req.body.titleEN ? sanitizedInput.titleEN : existingSerie.titleEN,
+            titleHU: req.body.titleHU ? sanitizedInput.titleHU : existingSerie.titleHU,
+            descriptionEN: req.body.descriptionEN ? sanitizedInput.descriptionEN : existingSerie.descriptionEN,
+            descriptionHU: req.body.descriptionHU ? sanitizedInput.descriptionHU : existingSerie.descriptionHU,
         }
         
         await updateSerieById(id, updatingSerie);
