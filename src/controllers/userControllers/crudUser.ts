@@ -3,6 +3,8 @@ import { getUser, deleteUserById, getUserById, UserModel } from "../../models/Us
 import { Connect, CloseConnect } from "../../configs/databaseConnect";
 import { updateUserById } from "../../models/User";
 import {authentication, random} from '../../helpers/index';
+import { sanitizeNestedInput } from "../../helpers/sanityzer";
+
 
 
 export const getAllUsers = async (req: Request,res:Response) => {
@@ -68,9 +70,14 @@ export const updateUser = async (req:Request, res:Response)=>{
             res.sendStatus(404).json({ error: "User not found" });
             return;
         }
+
+        const sanitizedUsername = sanitizeNestedInput(req.body.username);
+        const sanitizedEmail = sanitizeNestedInput(req.body.email);
+
+
         const updatingUser = {
-            username: req.body.username ? req.body.username : user.username,
-            email: req.body.email ? req.body.email : user.email,
+            username: req.body.username ? sanitizedUsername : user.username,
+            email: req.body.email ? sanitizedEmail : user.email,
             authentication: {
                 password: req.body.password ? authentication(req.body.password, salt) : user.authentication?.password ?? '',
                 salt: req.body.password ? salt : user.authentication?.salt ?? '',

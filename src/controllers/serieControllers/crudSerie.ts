@@ -2,23 +2,11 @@ import { Request, Response } from "express";
 import { CloseConnect, Connect } from "../../configs/databaseConnect";
 import { getSeries, getSerieByTitleEN, updateSerieById, deleteSerieById, getSerieById} from "../../models/Serie";
 import { createSerie } from "../../models/Serie";
-import { sanitizeInput } from "../../helpers/sanityzer";
+import { sanitizeNestedInput } from "../../helpers/sanityzer";
 
 let message;
 
-const sanitizeNestedInput = (input: any): any => {
-    if (typeof input === 'object' && input !== null) {
-      const sanitizedObject: any = {};
-      for (const key in input) {
-        if (Object.prototype.hasOwnProperty.call(input, key)) {
-          const value = input[key];
-          sanitizedObject[key] = typeof value === 'string' ? sanitizeInput(value) : value;
-        }
-      }
-      return sanitizedObject;
-    }
-    return sanitizeInput(input);
-  };
+
 
 export const getAllSeries = async (req:Request, res:Response ) => {
     await Connect();

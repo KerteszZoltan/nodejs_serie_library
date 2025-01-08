@@ -4,6 +4,8 @@ import { getUserByEmail , createUser} from '../../models/User';
 import {authentication, random} from '../../helpers/index';
 import { Connect,CloseConnect} from "../../configs/databaseConnect";
 import { validationResult } from 'express-validator';
+import { sanitizeNestedInput } from "../../helpers/sanityzer";
+
 
 
 let message;
@@ -115,10 +117,13 @@ export const register = async (req: Request, res: Response) => {
             return;
         }
 
+        const sanitizedUsername = sanitizeNestedInput(req.body.username);
+        const sanitizedEmail = sanitizeNestedInput(req.body.email);
+
         const salt = random();
         const user = await createUser({
-            email,
-            username,
+            sanitizedEmail,
+            sanitizedUsername,
             authentication: {
                 password: authentication(password, salt),
                 salt,
